@@ -70,10 +70,19 @@ public class HomeFrame extends JFrame {
 	          }
 	        });
 		menu1.add(mnuAddEV3);
+		/*
+	    JMenuItem mnuAddGo = new JMenuItem("Go/Stop");
+	    mnuAddEV3.addActionListener(new ActionListener(){
+	        public void actionPerformed(ActionEvent event){
+	        	Train_Scada_EV3_Cassiopee23.topGo(true);
+	          }
+	        });
+		menu1.add(mnuAddGo);*/
 		
 	    JMenuItem mnuExit = new JMenuItem("Exit");
 	    mnuExit.addActionListener(new ActionListener(){
 	        public void actionPerformed(ActionEvent event){
+	        	//Train_Scada_EV3_Cassiopee23.topExit();
 	        	Train_Scada_EV3_Cassiopee23.exit();
 	          }
 	        });
@@ -105,15 +114,11 @@ public class HomeFrame extends JFrame {
 		
 		content.add(panel);
 		content.add(messageLog);
-		
-
 	}
 	
 	public Container getContent() {
 		return content;
 	}
-
-
 
 	public void addMessage(String message) {
 		

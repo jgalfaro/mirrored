@@ -77,9 +77,9 @@ public class SystemFerroviaire {
 		return this.train[i].getId();
 	}
 	public void actionSetMoteur(int i) {
-		// TODO Auto-generated method stub
-		
+		setCons_Moteurs(!getEtat_Moteurs(i), i);		
 	}
+	
 	public void actionSlider1(int value) {
 		
 		if (Integer.signum(value)>0){

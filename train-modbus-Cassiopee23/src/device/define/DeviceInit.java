@@ -29,6 +29,17 @@ public class DeviceInit {
 		
 		read_init("Device.ini");
 
+		if(deviceType.equals("CircuitCentre")) {
+			device = new CircuitCentre(deviceAddr, modbusPort,modbusUnitId);
+		} else if (deviceType.equals("CircuitExtern")){
+			device = new CircuitExtern(deviceAddr, modbusPort,modbusUnitId);
+		} else if (deviceType.equals("Emetteur_IR")){
+			device = new Emetteur_IR(deviceAddr, modbusPort,modbusUnitId);
+		} else {
+			System.err.println("Device type ("+deviceType+") unknown");			
+		}
+		
+		/*
 		switch(deviceType){
 		
 		case "CircuitCentre":
@@ -41,7 +52,7 @@ public class DeviceInit {
 		default: 
 			System.err.println("Device type ("+deviceType+") unknown");
 				
-		}
+		}*/
 		
 		if (device != null) {
 			device.initEV3();

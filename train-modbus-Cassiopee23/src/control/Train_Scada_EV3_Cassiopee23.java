@@ -36,9 +36,14 @@ public class Train_Scada_EV3_Cassiopee23 {
 	public static List<CircuitExtern> circuitsExtern = new ArrayList<CircuitExtern>();
 	public static List<Emetteur_IR> emetteurs_IR = new ArrayList<Emetteur_IR>();
 
+	 public static Emetteur_IR testEm = null;
 	public static Iterator<CircuitCentre> iterCC = null;
 	public static Iterator<CircuitExtern> iterCE = null;
 	public static Iterator<Emetteur_IR> iterIR = null;
+	
+	
+	//private static boolean topExit=false;
+	//private static boolean topGo=false;
 	
 	public static void main(String[] args) throws Exception {
 
@@ -50,16 +55,19 @@ public class Train_Scada_EV3_Cassiopee23 {
 			}
 		});
 		
+			for(;;){	
+				//if (topGo==true){
+				//linker();
+				// BOUCLE INFINIE - ARRET SI UN QUIT ?!
+					//ALGO
+				window.afficherSysFerrPanel();
 			
-for(;;){
-	linker();
-		// ATTENDRE TOP
-		// linker variable ev3 aux variables du fichier train
-		// BOUCLE INFINIE - ARRET SI UN QUIT ?!
-			//ALGO
-	window.afficherSysFerrPanel();
-    		Delay.msDelay(250);
-		}
+				//}
+				//if (topExit==true) {break;}
+
+	    		Delay.msDelay(250);
+		
+			}
 
 //exit();
 	}
@@ -95,6 +103,8 @@ for(;;){
 		if (myBlock == null) {
 			return;
 		}
+		//testEm=myBlock;
+		myBlock.setTestConnect(true);
 		emetteurs_IR.add(myBlock);
 		window.addMessage("new brick added - EmetteurIR");
 	}
@@ -107,6 +117,8 @@ for(;;){
 		if (myBlock == null) {
 			return;
 		}
+
+		myBlock.setTestConnect(true);
 		circuitsCentre.add(myBlock);
 		window.addMessage("new brick added - CircuitCentre");
 	}	
@@ -119,6 +131,7 @@ for(;;){
 		if (myBlock == null) {
 			return;
 		}
+		myBlock.setTestConnect(true);
 		circuitsExtern.add(myBlock);
 		window.addMessage("new brick added - CircuitExtern");
 	}
@@ -263,16 +276,17 @@ for(;;){
 	}
 	
 	private static void linkerCol(){
-		mySys.setCouleurs(circuitsExtern.get(0).getCouleurInt(1),0);
+		mySys.setCouleurs(circuitsExtern.get(0).getCouleurInt(1),0); // capteur 1
 		mySys.setCouleurs(circuitsExtern.get(0).getCouleurInt(2),1);
 		mySys.setCouleurs(circuitsExtern.get(0).getCouleurInt(3),2);
 		
 		mySys.setCouleurs(circuitsCentre.get(0).getCouleurInt(1),3);
-		mySys.setCouleurs(circuitsCentre.get(0).getCouleurInt(2),4);
 		
-		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(1),5);
-		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(2),6);
-		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(3),7);
+		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(1),4);
+		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(2),5);
+		mySys.setCouleurs(circuitsExtern.get(1).getCouleurInt(3),6);
+		
+		mySys.setCouleurs(circuitsCentre.get(0).getCouleurInt(2),7); // capteur 8
 	}
 	
 	
@@ -282,14 +296,24 @@ for(;;){
 		for(i=0;i<2;i++){
 			tmp1=mySys.train[i].getV();
 			if (mySys.train[i].getDir()){
-				emetteurs_IR.get(0).setVitesseInt(i+1, tmp1, 1);
+				//emetteurs_IR.get(0).setVitesseInt(1, tmp1, 1);
 				emetteurs_IR.get(1).setVitesseInt(i+1, tmp1, 1);
 			} else {
-				emetteurs_IR.get(0).setVitesseInt(i+1, tmp1, 2);
+				//emetteurs_IR.get(0).setVitesseInt(1, tmp1, 2);
 				emetteurs_IR.get(1).setVitesseInt(i+1, tmp1, 2);
 			}
 		}
 	}
+
+	/*public static void topExit() {
+		topExit=true;
+		
+	}
+
+	public static void topGo(boolean value) {
+		if (value) {topGo=false;}
+		else {topGo=true;}
+	}*/
 
 	/*private static void prioriteTrains(){
 		

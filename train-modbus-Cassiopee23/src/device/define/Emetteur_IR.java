@@ -22,7 +22,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.utility.Delay;
 //Modbus imports
 import net.wimpi.modbus.ModbusDeviceIdentification;
-import net.wimpi.modbus.procimg.SimpleDigitalIn;
+import net.wimpi.modbus.procimg.SimpleDigitalOut;
 import net.wimpi.modbus.procimg.SimpleProcessImage;
 import net.wimpi.modbus.procimg.SimpleRegister;
 
@@ -57,13 +57,13 @@ public class Emetteur_IR extends Device{
 		
 		this.spi = new SimpleProcessImage();		
 		// Bool RO
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // TEST_CONNECT = 0
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // QUITTER = 1
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // TEST_CONNECT = 0
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // QUITTER = 1
 		
-		this.spi.addInputRegister(new SimpleRegister(0));  // TRAIN_1_VITESSE = 0 initialisé à 0
-		this.spi.addInputRegister(new SimpleRegister(0));  // TRAIN_2_VITESSE = 1 initialisé à 0
-		this.spi.addInputRegister(new SimpleRegister(0));  // TRAIN_1_AVAR = 2
-		this.spi.addInputRegister(new SimpleRegister(0));  // TRAIN_2_AVAR = 3
+		this.spi.addRegister(new SimpleRegister(0));  // TRAIN_1_VITESSE = 0 initialisé à 0
+		this.spi.addRegister(new SimpleRegister(0));  // TRAIN_2_VITESSE = 1 initialisé à 0
+		this.spi.addRegister(new SimpleRegister(0));  // TRAIN_1_AVAR = 2
+		this.spi.addRegister(new SimpleRegister(0));  // TRAIN_2_AVAR = 3
 		
 	}
 	@Override
@@ -97,7 +97,7 @@ public class Emetteur_IR extends Device{
 	}
 	@Override
 	public void run() {
-		while (Button.getButtons() != Button.ID_ESCAPE && getBool(QUITTER)!=true){
+		while (Button.getButtons() != Button.ID_ESCAPE && getBool(QUITTER)!=true ){
 			
 			indicationConnexion();
 			sendVitesse();
@@ -107,11 +107,11 @@ public class Emetteur_IR extends Device{
 	}
 	private void sendVitesse(){
 
-		tV1=getIntRO(TRAIN_1_VITESSE);
-		tV2=getIntRO(TRAIN_2_VITESSE);
+		tV1=getInt(TRAIN_1_VITESSE);
+		tV2=getInt(TRAIN_2_VITESSE);
 
-		avAr1=getIntRO(TRAIN_1_AVAR);
-		avAr1=getIntRO(TRAIN_2_AVAR);
+		avAr1=getInt(TRAIN_1_AVAR);
+		avAr1=getInt(TRAIN_2_AVAR);
 
 
 		E1.sendPFComboDirect(0,avAr1,1);
@@ -132,8 +132,8 @@ public class Emetteur_IR extends Device{
 		LCD.clearDisplay();
 
 		LCD.drawString("Emetteur_IR", 0, 0);
-		LCD.drawString("Vitesse 1 / AvAr: " + getIntRO(TRAIN_1_VITESSE) + getIntRO(TRAIN_1_AVAR),0,2); 
-		LCD.drawString("Vitesse 2 / AvAr : " + getIntRO(TRAIN_2_VITESSE) + getIntRO(TRAIN_2_AVAR),0,3);
+		LCD.drawString("Vit 1" + getInt(TRAIN_1_VITESSE) + getInt(TRAIN_1_AVAR),0,2); 
+		LCD.drawString("Vit 2" + getInt(TRAIN_2_VITESSE) + getInt(TRAIN_2_AVAR),0,3);
 	}
 	
 	private void indicationConnexion() {

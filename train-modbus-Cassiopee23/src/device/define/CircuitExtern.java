@@ -20,8 +20,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.utility.Delay;
 import net.wimpi.modbus.ModbusDeviceIdentification;
-import net.wimpi.modbus.procimg.SimpleDigitalIn;
 import net.wimpi.modbus.procimg.SimpleDigitalOut;
 import net.wimpi.modbus.procimg.SimpleProcessImage;
 import net.wimpi.modbus.procimg.SimpleRegister;
@@ -65,11 +65,11 @@ public class CircuitExtern extends Device{
 		
 		this.spi = new SimpleProcessImage();		
 		// Bool RO
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // TEST_CONNECT = 0
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // QUITTER = 1
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // TEST_CONNECT = 0
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // QUITTER = 1
 
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // CONS_MOT_1 = 2
-		this.spi.addDigitalIn(new SimpleDigitalIn(false)); // CONS_MOT_2 = 3
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // CONS_MOT_1 = 2
+		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // CONS_MOT_2 = 3
 		
 		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // ETAT_MOT_1 = 4
 		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // ETAT_MOT_2 = 5
@@ -100,7 +100,7 @@ public class CircuitExtern extends Device{
 		C1 = new EV3ColorSensor(SensorPort.S1);
 		C2 = new EV3ColorSensor(SensorPort.S2);
 		C3 = new EV3ColorSensor(SensorPort.S3);
-		M1 = new EV3LargeRegulatedMotor(MotorPort.B);
+		M1 = new EV3LargeRegulatedMotor(MotorPort.B); 
 		M2 = new EV3LargeRegulatedMotor(MotorPort.C);
 	}
 	
@@ -130,8 +130,11 @@ public class CircuitExtern extends Device{
 			sendColors();
 			actionMotors();
 			drawScreen();
+
+			Delay.msDelay(20);
 		}
 		
+		stopEV3();
 	}
 	
 	private void drawScreen() {
@@ -152,39 +155,44 @@ public class CircuitExtern extends Device{
 	}
 	
 	private void initMotors(){
+		while(!Button.ESCAPE.isDown()){
+			////// MOTOR 1  INITIALISATION //////////
+			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){ // suivant ou quit
 		
-		////// MOTOR 1  INITIALISATION //////////
-		while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){ // suivant ou quit
-	
-			LCD.clearDisplay();
-			LCD.drawString("CircuitCentre", 0, 0);
-			LCD.drawString("MOTOR_1 ferme - ouvre - suivant ?",0,1);
-			if(Button.RIGHT.isDown()){ //ouverture
-				M1.rotate(20);
-				setBool(ETAT_MOT_1,true);
-				etat_mot[0]=1;
+				LCD.clearDisplay();
+				LCD.drawString("CircuitCentre", 0, 0);
+				LCD.drawString("MOTOR_1 ferme - ouvre - suivant ?",0,1);
+				if(Button.RIGHT.isDown()){ //ouverture
+					M1.rotate(20);
+					setBool(ETAT_MOT_1,true);
+					etat_mot[0]=1;
+				}
+				if(Button.LEFT.isDown()){ // fermeture
+					M1.rotate(-20);
+					setBool(ETAT_MOT_1,false);
+					etat_mot[0]=0;
+				}
+
+				Delay.msDelay(25);
 			}
-			if(Button.LEFT.isDown()){ // fermeture
-				M1.rotate(-20);
-				setBool(ETAT_MOT_1,false);
-				etat_mot[0]=0;
-			}			
-		}
-		/////// MOTOR 2 INITIALISATION //////////
-		while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){
-	
-			LCD.clearDisplay();
-			LCD.drawString("CircuitCentre", 0, 0);
-			LCD.drawString("MOTOR_2 ferme - ouvre - suivant ?",0,1);
-			if(Button.RIGHT.isDown()){
-				M2.rotate(20);
-				setBool(ETAT_MOT_2,true);
-				etat_mot[1]=1;
-			}
-			if(Button.LEFT.isDown()){
-				M2.rotate(-20);
-				setBool(ETAT_MOT_2,false);
-				etat_mot[1]=0;
+			/////// MOTOR 2 INITIALISATION //////////
+			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){
+		
+				LCD.clearDisplay();
+				LCD.drawString("CircuitCentre", 0, 0);
+				LCD.drawString("MOTOR_2 ferme - ouvre - suivant ?",0,1);
+				if(Button.RIGHT.isDown()){
+					M2.rotate(20);
+					setBool(ETAT_MOT_2,true);
+					etat_mot[1]=1;
+				}
+				if(Button.LEFT.isDown()){
+					M2.rotate(-20);
+					setBool(ETAT_MOT_2,false);
+					etat_mot[1]=0;
+				}
+
+				Delay.msDelay(25);
 			}
 		}
 	}
@@ -201,8 +209,8 @@ public class CircuitExtern extends Device{
 	private void actionMotors(){
 		
 		///// MOTOR 1 //////// 
-		if(getBool(ETAT_MOT_1)!=getBoolRO(CONS_MOT_1)){
-			if (getBoolRO(CONS_MOT_1)){
+		if(getBool(ETAT_MOT_1)!=getBool(CONS_MOT_1)){
+			if (getBool(CONS_MOT_1)){
 				M1.rotate(20);
 				setBool(ETAT_MOT_1,true);
 				etat_mot[0]=1;
