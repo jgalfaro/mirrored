@@ -97,8 +97,8 @@ public class CircuitCentre extends Device{
 	public void loadEV3() {
 		C1 = new EV3ColorSensor(SensorPort.S1);
 		C2 = new EV3ColorSensor(SensorPort.S2);
-		M1 = new EV3LargeRegulatedMotor(MotorPort.B);
-		M2 = new EV3LargeRegulatedMotor(MotorPort.C);
+		M1 = new EV3LargeRegulatedMotor(MotorPort.A);
+		M2 = new EV3LargeRegulatedMotor(MotorPort.D);
 	}
 	
 	// fermeture du bloc
@@ -126,7 +126,7 @@ public class CircuitCentre extends Device{
 			actionMotors();
 			drawScreen();
 
-			Delay.msDelay(20);
+			Delay.msDelay(40);
 		}
 		
 		stopEV3();
@@ -136,9 +136,10 @@ public class CircuitCentre extends Device{
 	private void drawScreen() {
 		LCD.clearDisplay();
 		LCD.drawString("CircuitCentre", 0, 0);
-		LCD.drawString("ETAT_MOT_1 :" + etat_mot[0], 0, 1);
-		LCD.drawString("ETAT_MOT_1 :" + etat_mot[1], 0, 2);
-		LCD.drawString("COULEUR  :" + sample[0] + sample[1], 0, 4);
+		LCD.drawString("ETAT_MOT_1 : " + etat_mot[0], 0, 2);
+		LCD.drawString("ETAT_MOT_2 : " + etat_mot[1], 0, 3);
+		LCD.drawString("COULEUR  1 : " + sample[0], 0, 5);
+		LCD.drawString("COULEUR  2 : " + sample[1], 0, 6);
 	}
 	
 	private void indicationConnexion() {
@@ -151,44 +152,50 @@ public class CircuitCentre extends Device{
 	}
 	
 	private void initMotors(){
-		while(!Button.ESCAPE.isDown()){
+		while(!Button.DOWN.isDown()){
 			////// MOTOR 1  INITIALISATION //////////
-			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){ // suivant ou quit
+			while(!Button.ENTER.isDown()&& !Button.DOWN.isDown()){ // suivant ou quit
 		
 				LCD.clearDisplay();
 				LCD.drawString("CircuitCentre", 0, 0);
-				LCD.drawString("MOTOR_1 ferme - ouvre - suivant ?",0,1);
+				LCD.drawString("MOTOR_1 ferme - gauche",0,1);
+				LCD.drawString("MOTOR_1 ouvre - droite ",0,2);
+				LCD.drawString("MOTOR_1 suivant - OK ",0,3);
+				LCD.drawString("quitter Init - bas ",0,4);
 				if(Button.RIGHT.isDown()){ //ouverture
-					M1.rotate(20);
+					M1.rotate(-20);
 					setBool(ETAT_MOT_1,true);
 					etat_mot[0]=1;
 				}
 				if(Button.LEFT.isDown()){ // fermeture
-					M1.rotate(-20);
+					M1.rotate(20);
 					setBool(ETAT_MOT_1,false);
 					etat_mot[0]=0;
 				}
 
-				Delay.msDelay(20);
+				Delay.msDelay(25);
 			}
 			/////// MOTOR 2 INITIALISATION //////////
-			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){
+			while(!Button.ENTER.isDown()&& !Button.DOWN.isDown()){
 		
 				LCD.clearDisplay();
 				LCD.drawString("CircuitCentre", 0, 0);
-				LCD.drawString("MOTOR_2 ferme - ouvre - suivant ?",0,1);
+				LCD.drawString("MOTOR_2 ferme - gauche",0,1);
+				LCD.drawString("MOTOR_2 ouvre - droite ",0,2);
+				LCD.drawString("MOTOR_2 suivant - OK ",0,3);
+				LCD.drawString("quitter Init - bas ",0,4);
 				if(Button.RIGHT.isDown()){
-					M2.rotate(20);
+					M2.rotate(-20);
 					setBool(ETAT_MOT_2,true);
 					etat_mot[1]=1;
 				}
 				if(Button.LEFT.isDown()){
-					M2.rotate(-20);
+					M2.rotate(20);
 					setBool(ETAT_MOT_2,false);
 					etat_mot[1]=0;
 				}
 
-				Delay.msDelay(20);
+				Delay.msDelay(25);
 			}
 		}
 	}
@@ -202,33 +209,72 @@ public class CircuitCentre extends Device{
 	
 	private void actionMotors(){
 		
-		///// MOTOR 1 //////// 
-		if(getBool(ETAT_MOT_1)!=getBool(CONS_MOT_1)){
-			if (getBool(CONS_MOT_1)){
+		if(getBool(CONS_MOT_1)==true){
+			if (getBool(ETAT_MOT_1) == false ) {
+				M1.rotate(-20);
+				setBool(ETAT_MOT_1,true);
+				etat_mot[0]=1;
+			} else {}
+		}
+		if(getBool(CONS_MOT_1)==false){
+			if (getBool(ETAT_MOT_1) == true ) {
 				M1.rotate(20);
+				setBool(ETAT_MOT_1,false);
+				etat_mot[0]=0;
+			} else {}
+		}
+		
+		
+		if(getBool(CONS_MOT_2)==true){
+			if (getBool(ETAT_MOT_2) == false ) {
+				M2.rotate(-20);
+				setBool(ETAT_MOT_2,true);
+				etat_mot[1]=1;
+			} else {}
+		}
+		if(getBool(CONS_MOT_2)==false){
+			if (getBool(ETAT_MOT_2) == true ) {
+				M2.rotate(20);
+				setBool(ETAT_MOT_2,false);
+				etat_mot[1]=0;
+			} else {}
+		}
+		
+		/*
+		
+		boolean a=false;
+		boolean b=false;
+		a=getBool(ETAT_MOT_1);
+		b=getBool(ETAT_MOT_2);
+		///// MOTOR 1 //////// 
+		
+		if(a!=getBool(CONS_MOT_1)){
+			if (a==false){//équivalent à consigne vrai
+				M1.rotate(-20);
 				setBool(ETAT_MOT_1,true);
 				etat_mot[0]=1;
 			} else {
-				M1.rotate(-20);
+				M1.rotate(20);
 				setBool(ETAT_MOT_1,false);
 				etat_mot[0]=0;
 			}
 			
 		}		
 		
-		
 		///// MOTOR 2 /////////
-		if(getBool(ETAT_MOT_2)!=getBool(CONS_MOT_2)){
-			if (getBool(CONS_MOT_2)){
-				M2.rotate(20);
+		if(b!=getBool(CONS_MOT_2)){
+			if (b==false){ //équivalent à consigne vrai
+				M2.rotate(-20);
 				setBool(ETAT_MOT_2,true);
 				etat_mot[1]=1;
 			} else {
-				M2.rotate(-20);
+				M2.rotate(20);
 				setBool(ETAT_MOT_2,false);
 				etat_mot[1]=0;
 			}
 		}
+		
+		*/
 	}
 	
 	private void setColors(){

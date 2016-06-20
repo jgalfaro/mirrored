@@ -18,11 +18,11 @@ public class CircuitCentre extends Device {
 	private static final int TEST_CONNECT = 0; // ordi -> EV3
 	private static final int QUITTER = 1; 
 	
-	private static final int ETAT_MOT_1 = 2 ;  // EV3 -> ordi
-	private static final int ETAT_MOT_2 = 3 ;
-	
-	private static final int CONS_MOT_1 = 4 ; // ordi -> EV3
-	private static final int CONS_MOT_2 = 5 ;
+	  private static final int ETAT_MOT_1 = 2 ;  // EV3 -> ordi
+	  private static final int ETAT_MOT_2 = 3 ;
+	  
+	  private static final int CONS_MOT_1 = 4 ; // ordi -> EV3
+	  private static final int CONS_MOT_2 = 5 ;
 	  	// INT registre
 	private static final int COULEUR_1=0;  // EV3 -> ordi
 	private static final int COULEUR_2=1;
@@ -60,8 +60,10 @@ public class CircuitCentre extends Device {
 		switch(i){
 		case 1 :
 			this.setBool(CircuitCentre.CONS_MOT_1, value);
+		    break;
 		case 2:
-			this.setBool(CircuitCentre.CONS_MOT_2, value);		
+			this.setBool(CircuitCentre.CONS_MOT_2, value);
+		    break;		
 		default : 
 		}
 	}

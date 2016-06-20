@@ -54,6 +54,12 @@ public class HomeFrame extends JFrame {
 		panel.repaint();
 	}
 	
+	public void afficherAlgoPanel(){
+		panel.removeAll();
+	    panel.principalPanel();
+		panel.repaint();
+	}
+	
 	private void buildMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		 

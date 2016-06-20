@@ -53,12 +53,14 @@ public class Emetteur_IR extends Device {
 	public void setVitesseInt(int i, int v , int avAr) {
 		
 		switch(i){
-		case 1 :
+		case 0 :
 			this.setInt(Emetteur_IR.TRAIN_1_VITESSE, v);
 			this.setInt(Emetteur_IR.TRAIN_1_AVAR, avAr);
-		case 2 :
+		    break;
+		case 1 :
 			this.setInt(Emetteur_IR.TRAIN_2_VITESSE, v);
 			this.setInt(Emetteur_IR.TRAIN_2_AVAR, avAr);
+		    break;
 		default :
 		}
 	}

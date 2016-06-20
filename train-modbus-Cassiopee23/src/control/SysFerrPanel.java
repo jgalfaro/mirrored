@@ -51,13 +51,13 @@ public class SysFerrPanel extends JPanel implements ActionListener,ChangeListene
 			this.add(consMot[i]);
 		}	
 		
-		for(i=0;i<2;i++){
+		/*for(i=0;i<2;i++){
 			sensTr[i] = new JButton("SENS ");
 			sensTr[i].addActionListener(this);
 			sensTr[i].setBounds(550, 130+i*170, 200, 50);
 			sensTr[i].setVisible(true);
 			this.add(sensTr[i]);
-		}
+		}*/
 		
 		
 		urgence.addActionListener(this);
@@ -84,17 +84,17 @@ public class SysFerrPanel extends JPanel implements ActionListener,ChangeListene
 		slider2.addChangeListener(this);
 		this.add(slider2);
 		
-		algo.addActionListener(this);
+		/*algo.addActionListener(this);
 		algo.setBounds(450, 50, 120, 20);
 		algo.setVisible(true);
-		this.add(algo);
+		this.add(algo);*/
 	}
 	
 	
 	public void principalPanel() {
 		int i=0;
-		addLabelTrain("Train 1 :", 10,100,0);
-		addLabelTrain("Train 2 :",10,270,1);
+		addLabelTrain("Train 1 :", 10,20,0);
+		addLabelTrain("Train 2 :",10,220,1);
 		
 		addLabel("Moteurs :", 10,450);
 		for (i=0;i<6;i++){
@@ -104,9 +104,9 @@ public class SysFerrPanel extends JPanel implements ActionListener,ChangeListene
 			addLabel(Train_Scada_EV3_Cassiopee23.mySys.getCons_MoteursG(i),370,480+i*40);		
 		}
 		addLabel("Colorimètre :", 620,450);
-		for (i=0;i<6;i++){
-			addLabel("CAPTEUR_"+(i+1),650,480+i*40);
-			addLabel(Train_Scada_EV3_Cassiopee23.mySys.getCouleurs(i),750,480+i*40);
+		for (i=0;i<8;i++){
+			addLabel("CAPTEUR_"+(i+1),700,480+i*30);
+			addLabel(Train_Scada_EV3_Cassiopee23.mySys.getCouleurs(i),800,480+i*30);
 		}
 	}
 	
@@ -115,8 +115,8 @@ public class SysFerrPanel extends JPanel implements ActionListener,ChangeListene
 		boolean b=false;
 		addLabel(s, x ,y);
 		
-		addLabel("Id :", x+20,y+40);
-		a=Train_Scada_EV3_Cassiopee23.mySys.train[i].getId();
+		addLabel("Portion :", x+20,y+40);
+		a=Train_Scada_EV3_Cassiopee23.mySys.train[i].getPortion();
 		addLabel(Integer.toString(a), x+100,y+40);
 		
 		addLabel("Position :", x+20,y+80);		
@@ -138,6 +138,10 @@ public class SysFerrPanel extends JPanel implements ActionListener,ChangeListene
 		addLabel("Av / Ar :", x+220,y+120);
 		b=Train_Scada_EV3_Cassiopee23.mySys.train[i].getDir();
 		addLabel(Boolean.toString(b), x+320,y+120);
+		
+		addLabel("Absolu :", x+20,y+160);
+		b=Train_Scada_EV3_Cassiopee23.mySys.train[i].getAbsolu();
+		addLabel(Boolean.toString(b), x+120,y+160);
 	}
 	
 	public void addLabel(String s,int x, int y){

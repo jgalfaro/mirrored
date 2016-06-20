@@ -56,7 +56,7 @@ public class Emetteur_IR extends Device{
 	public void initModbusSpi() {
 		
 		this.spi = new SimpleProcessImage();		
-		// Bool RO
+		// Bool RW
 		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // TEST_CONNECT = 0
 		this.spi.addDigitalOut(new SimpleDigitalOut(false)); // QUITTER = 1
 		
@@ -85,7 +85,7 @@ public class Emetteur_IR extends Device{
 	}
 	@Override
 	public void loadEV3() {
-		E1 = new IRLink(SensorPort.S3);
+		E1 = new IRLink(SensorPort.S4);
 
 	}
 	
@@ -110,21 +110,83 @@ public class Emetteur_IR extends Device{
 		tV1=getInt(TRAIN_1_VITESSE);
 		tV2=getInt(TRAIN_2_VITESSE);
 
+
+
 		avAr1=getInt(TRAIN_1_AVAR);
-		avAr1=getInt(TRAIN_2_AVAR);
-
-
-		E1.sendPFComboDirect(0,avAr1,1);
-		E1.sendPFComboDirect(3,avAr2,1);
+		avAr2=getInt(TRAIN_2_AVAR);
+		/*
+		E1.sendPFComboDirect(0,0,avAr1);
+		E1.sendPFComboDirect(3,0,avAr2);
 		Delay.msDelay(Math.min(tV1,tV2));
-		E1.sendPFComboDirect(0,avAr1,0);
-		E1.sendPFComboDirect(3,avAr2,1);
+		if (tV1<tV2){
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,avAr2);
+		} else { 
+			if (tV1>tV2){
+				E1.sendPFComboDirect(0,0,avAr1);
+				E1.sendPFComboDirect(3,0,0);
+			} else {
+				E1.sendPFComboDirect(0,0,0);
+				E1.sendPFComboDirect(3,0,0);
+			}
+		}
 		Delay.msDelay(Math.max(tV1,tV2)-Math.min(tV1,tV2));		
-		E1.sendPFComboDirect(0,avAr1,0);
-		E1.sendPFComboDirect(3,avAr2,0);
-		Delay.msDelay(8-Math.max(tV1,tV2));
+		E1.sendPFComboDirect(0,0,0);
+		E1.sendPFComboDirect(3,0,0);
+		Delay.msDelay(20-Math.max(tV1,tV2));
+		*/
+		if (tV1==0&&tV2==0){
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			Delay.msDelay(5);
+			
+		}
+		if (tV1!=0&&tV2==0){
+			E1.sendPFComboDirect(0,0,avAr1);
+			E1.sendPFComboDirect(3,0,0);
+		//	Delay.msDelay(3);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,avAr1);
+			E1.sendPFComboDirect(3,0,0);
+			Delay.msDelay(100);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+		//	Delay.msDelay(2);
+		}
+		if (tV1==0&&tV2!=0){
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,avAr2);
+		//	Delay.msDelay(3);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,avAr2);
+			Delay.msDelay(100);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+		//	Delay.msDelay(2);
+		}
+		if (tV1!=0&&tV2!=0){
+			E1.sendPFComboDirect(0,0,avAr1);
+			E1.sendPFComboDirect(3,0,avAr2);
+		//	Delay.msDelay(3);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,avAr1);
+			E1.sendPFComboDirect(3,0,avAr2);
+			Delay.msDelay(100);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+			E1.sendPFComboDirect(0,0,0);
+			E1.sendPFComboDirect(3,0,0);
+		//	Delay.msDelay(2);
+		}
 
-		
 	}
 	
 	
@@ -132,8 +194,8 @@ public class Emetteur_IR extends Device{
 		LCD.clearDisplay();
 
 		LCD.drawString("Emetteur_IR", 0, 0);
-		LCD.drawString("Vit 1" + getInt(TRAIN_1_VITESSE) + getInt(TRAIN_1_AVAR),0,2); 
-		LCD.drawString("Vit 2" + getInt(TRAIN_2_VITESSE) + getInt(TRAIN_2_AVAR),0,3);
+		LCD.drawString("Vit 1 : " + getInt(TRAIN_1_VITESSE) +" " + getInt(TRAIN_1_AVAR),0,2); 
+		LCD.drawString("Vit 2 : " + getInt(TRAIN_2_VITESSE) +" " + getInt(TRAIN_2_AVAR),0,3);
 	}
 	
 	private void indicationConnexion() {

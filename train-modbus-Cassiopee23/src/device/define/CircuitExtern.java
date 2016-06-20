@@ -36,7 +36,6 @@ public class CircuitExtern extends Device{
 	  public EV3 ev3 = null;
 	  private float[] sample = new float[3]; // tmp color data
 	  private int[] etat_mot = new int[2]; // tmp motor data
-	  
 	  	// BOOL registre
 	  private static final int TEST_CONNECT = 0; // ordi -> EV3
 	  private static final int QUITTER = 1;
@@ -100,8 +99,8 @@ public class CircuitExtern extends Device{
 		C1 = new EV3ColorSensor(SensorPort.S1);
 		C2 = new EV3ColorSensor(SensorPort.S2);
 		C3 = new EV3ColorSensor(SensorPort.S3);
-		M1 = new EV3LargeRegulatedMotor(MotorPort.B); 
-		M2 = new EV3LargeRegulatedMotor(MotorPort.C);
+		M1 = new EV3LargeRegulatedMotor(MotorPort.A); 
+		M2 = new EV3LargeRegulatedMotor(MotorPort.D);
 	}
 	
 	// fermeture du bloc
@@ -131,7 +130,7 @@ public class CircuitExtern extends Device{
 			actionMotors();
 			drawScreen();
 
-			Delay.msDelay(20);
+			Delay.msDelay(50);
 		}
 		
 		stopEV3();
@@ -140,9 +139,11 @@ public class CircuitExtern extends Device{
 	private void drawScreen() {
 		LCD.clearDisplay();
 		LCD.drawString("CircuitExtern", 0, 0);
-		LCD.drawString("ETAT_MOT_1 :" + etat_mot[0], 0, 2);
-		LCD.drawString("ETAT_MOT_1 :" + etat_mot[1], 0, 3);
-		LCD.drawString("COULEUR  :" + sample[0] + sample[1] + sample[2], 0, 5);
+		LCD.drawString("ETAT_MOT_1 : " + etat_mot[0], 0, 2);
+		LCD.drawString("ETAT_MOT_2 : " + etat_mot[1], 0, 3);
+		LCD.drawString("COULEUR  1 : " + sample[0], 0, 5);
+		LCD.drawString("COULEUR  2 : " + sample[1], 0, 6);
+		LCD.drawString("COULEUR  3 : " + sample[2], 0, 7);
 	}
 	
 	private void indicationConnexion() {
@@ -155,20 +156,23 @@ public class CircuitExtern extends Device{
 	}
 	
 	private void initMotors(){
-		while(!Button.ESCAPE.isDown()){
+		while(!Button.DOWN.isDown()){
 			////// MOTOR 1  INITIALISATION //////////
-			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){ // suivant ou quit
-		
+			while(!Button.ENTER.isDown()&& !Button.DOWN.isDown()){ // suivant ou quit
+				
 				LCD.clearDisplay();
-				LCD.drawString("CircuitCentre", 0, 0);
-				LCD.drawString("MOTOR_1 ferme - ouvre - suivant ?",0,1);
+				LCD.drawString("CircuitExtern", 0, 0);
+				LCD.drawString("MOTOR_1 ferme - gauche",0,1);
+				LCD.drawString("MOTOR_1 ouvre - droite ",0,2);
+				LCD.drawString("MOTOR_1 suivant - OK ",0,3);
+				LCD.drawString("quitter Init - bas ",0,4);
 				if(Button.RIGHT.isDown()){ //ouverture
-					M1.rotate(20);
+					M1.rotate(-20);
 					setBool(ETAT_MOT_1,true);
 					etat_mot[0]=1;
 				}
 				if(Button.LEFT.isDown()){ // fermeture
-					M1.rotate(-20);
+					M1.rotate(20);
 					setBool(ETAT_MOT_1,false);
 					etat_mot[0]=0;
 				}
@@ -176,18 +180,21 @@ public class CircuitExtern extends Device{
 				Delay.msDelay(25);
 			}
 			/////// MOTOR 2 INITIALISATION //////////
-			while(!Button.ENTER.isDown()&& !Button.ESCAPE.isDown()){
+			while(!Button.ENTER.isDown()&& !Button.DOWN.isDown()){
 		
 				LCD.clearDisplay();
-				LCD.drawString("CircuitCentre", 0, 0);
-				LCD.drawString("MOTOR_2 ferme - ouvre - suivant ?",0,1);
+				LCD.drawString("CircuitExtern", 0, 0);
+				LCD.drawString("MOTOR_2 ferme - gauche",0,1);
+				LCD.drawString("MOTOR_2 ouvre - droite ",0,2);
+				LCD.drawString("MOTOR_2 suivant - OK ",0,3);
+				LCD.drawString("quitter Init - bas ",0,4);
 				if(Button.RIGHT.isDown()){
-					M2.rotate(20);
+					M2.rotate(-20);
 					setBool(ETAT_MOT_2,true);
 					etat_mot[1]=1;
 				}
 				if(Button.LEFT.isDown()){
-					M2.rotate(-20);
+					M2.rotate(20);
 					setBool(ETAT_MOT_2,false);
 					etat_mot[1]=0;
 				}
@@ -207,33 +214,35 @@ public class CircuitExtern extends Device{
 	}
 	
 	private void actionMotors(){
-		
-		///// MOTOR 1 //////// 
-		if(getBool(ETAT_MOT_1)!=getBool(CONS_MOT_1)){
-			if (getBool(CONS_MOT_1)){
-				M1.rotate(20);
+		if(getBool(CONS_MOT_1)==true){
+			if (getBool(ETAT_MOT_1) == false ) {
+				M1.rotate(-20);
 				setBool(ETAT_MOT_1,true);
 				etat_mot[0]=1;
-			} else {
-				M1.rotate(-20);
+			} else {}
+		}
+		if(getBool(CONS_MOT_1)==false){
+			if (getBool(ETAT_MOT_1) == true ) {
+				M1.rotate(20);
 				setBool(ETAT_MOT_1,false);
 				etat_mot[0]=0;
-			}
-			
-		}		
+			} else {}
+		}
 		
 		
-		///// MOTOR 2 /////////
-		if(getBool(ETAT_MOT_2)!=getBoolRO(CONS_MOT_2)){
-			if (getBoolRO(CONS_MOT_2)){
-				M2.rotate(20);
+		if(getBool(CONS_MOT_2)==true){
+			if (getBool(ETAT_MOT_2) == false ) {
+				M2.rotate(-20);
 				setBool(ETAT_MOT_2,true);
 				etat_mot[1]=1;
-			} else {
-				M2.rotate(-20);
+			} else {}
+		}
+		if(getBool(CONS_MOT_2)==false){
+			if (getBool(ETAT_MOT_2) == true ) {
+				M2.rotate(20);
 				setBool(ETAT_MOT_2,false);
 				etat_mot[1]=0;
-			}
+			} else {}
 		}
 	}
 	

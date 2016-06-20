@@ -63,8 +63,10 @@ public class CircuitExtern extends Device {
 		switch(i){
 		case 1 :
 			this.setBool(CircuitExtern.CONS_MOT_1, value);
+		    break;
 		case 2:
-			this.setBool(CircuitExtern.CONS_MOT_2, value);		
+			this.setBool(CircuitExtern.CONS_MOT_2, value);
+		    break;		
 		default : 
 		}
 	}

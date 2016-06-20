@@ -54,19 +54,22 @@ public class Train_Scada_EV3_Cassiopee23 {
 				window.setVisible(true);
 			}
 		});
-		
-			for(;;){	
-				//if (topGo==true){
-				//linker();
-				// BOUCLE INFINIE - ARRET SI UN QUIT ?!
-					//ALGO
-				window.afficherSysFerrPanel();
-			
-				//}
-				//if (topExit==true) {break;}
 
-	    		Delay.msDelay(250);
-		
+    	Train_Scada_EV3_Cassiopee23.addCircuitCentre();
+    	Train_Scada_EV3_Cassiopee23.addCircuitExtern();
+    	Train_Scada_EV3_Cassiopee23.addCircuitExtern();
+    	Train_Scada_EV3_Cassiopee23.addEmetteur_IR();
+    	Train_Scada_EV3_Cassiopee23.addEmetteur_IR();
+    	
+    	mySys.initSystem(7, 3);
+    	
+			for(;;){	
+
+				//window.afficherAlgoPanel();
+				//testAlgoForRun();
+				linker(false);
+
+				Delay.msDelay(25);
 			}
 
 //exit();
@@ -242,10 +245,19 @@ public class Train_Scada_EV3_Cassiopee23 {
 	}
 	
 	
-	private static void linker(){
+	private static void linker(boolean algo){
+		mySys.linkerCouleurPosition();
+		mySys.detectEtChangePortion(0);
+		mySys.detectEtChangePortion(1);
+		mySys.train[0].setAbsolu(mySys.train[0].getSens(), mySys.train[0].getDir());
+		mySys.train[1].setAbsolu(mySys.train[1].getSens(), mySys.train[1].getDir());
 		linkerMot();
 		linkerCol();
 		linkerV();
+		if(algo){	window.afficherAlgoPanel();
+		} else { window.afficherSysFerrPanel();
+		}
+		Delay.msDelay(25);
 	}
 	private static void linkerMot(){
 		
@@ -270,7 +282,7 @@ public class Train_Scada_EV3_Cassiopee23 {
 		circuitsCentre.get(0).setConsMot(2,mySys.getCons_Moteurs(4));
 		
 		//mot6 - ev3 droite
-		mySys.setEtat_Moteurs(circuitsExtern.get(0).getEtatMot(1),5);
+		mySys.setEtat_Moteurs(circuitsExtern.get(0).getEtatMot(2),5);
 		circuitsExtern.get(0).setConsMot(2,mySys.getCons_Moteurs(5));
 		
 	}
@@ -295,12 +307,23 @@ public class Train_Scada_EV3_Cassiopee23 {
 		int tmp1=0;
 		for(i=0;i<2;i++){
 			tmp1=mySys.train[i].getV();
+			
 			if (mySys.train[i].getDir()){
-				//emetteurs_IR.get(0).setVitesseInt(1, tmp1, 1);
-				emetteurs_IR.get(1).setVitesseInt(i+1, tmp1, 1);
+				if (tmp1==0){
+					emetteurs_IR.get(0).setVitesseInt(i, tmp1, 0);
+					emetteurs_IR.get(1).setVitesseInt(i, tmp1, 0);
+				} else {
+					emetteurs_IR.get(0).setVitesseInt(i, tmp1, 1);
+					emetteurs_IR.get(1).setVitesseInt(i, tmp1, 1);
+				}
 			} else {
-				//emetteurs_IR.get(0).setVitesseInt(1, tmp1, 2);
-				emetteurs_IR.get(1).setVitesseInt(i+1, tmp1, 2);
+				if (tmp1==0) {
+					emetteurs_IR.get(0).setVitesseInt(i, tmp1, 0);
+					emetteurs_IR.get(1).setVitesseInt(i, tmp1, 0);
+				} else {
+					emetteurs_IR.get(0).setVitesseInt(i, tmp1, 2);
+					emetteurs_IR.get(1).setVitesseInt(i, tmp1, 2);
+				}
 			}
 		}
 	}
@@ -320,4 +343,270 @@ public class Train_Scada_EV3_Cassiopee23 {
 		
 		
 	}*/
+	
+	
+	
+	
+	
+	
+	////////////// DEG /////////
+	
+	
+	public static void testAlgoForRun(){
+		if (mySys.train[0].getPortion()==mySys.train[1].getPortion()){
+			algoCollision(mySys.train[0].getPortion());
+		}
+	}
+	
+	public static void algoCollision(int i){// doit prendre le truc d'urgence
+		int j=0;
+		int k=0;
+		
+
+			
+		if (mySys.train[0].getAbsolu()==mySys.train[1].getAbsolu()){
+			
+			if (mySys.train[0].getPrio()==1){ // train j a la priorité
+				j=0;
+				k=1;
+			} else { 
+				j=1;
+				k=0;
+			}
+			
+			int vk=mySys.train[k].getV();
+				while(mySys.train[j].getPortion()== mySys.train[k].getPortion()){
+					mySys.train[k].setV(0);
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					linkerV();
+				}
+				mySys.train[k].setV(vk);
+				linkerV();
+		} else {
+			
+			if (mySys.train[0].getAbsolu()==true){ // train j a la priorité
+				j=0;
+				k=1;
+			} else { 
+				j=1;
+				k=0;
+			}
+					
+					
+			if (i==1){			
+				
+				int vk=mySys.train[k].getV();
+				mySys.setCons_Moteurs(true,3);
+				linker(true);
+				
+				while(mySys.getCouleurs(6)!= 0 && mySys.getCouleurs(6)!=7 && mySys.getCouleurs(6)!=2){
+					mySys.train[j].setV(0);
+					mySys.train[k].setV(-1);
+					linker(true);
+				}
+				
+				mySys.train[k].setV(0);
+				mySys.setCons_Moteurs(false,3);
+				linker(true);
+				
+				while(mySys.getCouleurs(7)!= 0 && mySys.getCouleurs(7)!= 7 && mySys.getCouleurs(7)!=2){
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				mySys.train[k].setV(vk);
+				linker(true);
+				
+			}
+			if (i==2){
+
+				int vk=mySys.train[k].getV();
+				mySys.train[k].setV(0);
+				linker(true);
+				
+				while(mySys.getCouleurs(0)!= 0 && mySys.getCouleurs(0)!= 7 && mySys.getCouleurs(0)!=2){
+					mySys.train[j].setV(1);mySys.train[j].setDir(false);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				
+
+				while(mySys.getCouleurs(0)== 0 || mySys.getCouleurs(0)==2 || mySys.getCouleurs(0)==7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(false);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				linker(true);
+				////
+				while(mySys.getCouleurs(3)!= 0 && mySys.getCouleurs(3)!=2 && mySys.getCouleurs(3)!=7){
+					mySys.train[k].setV(-1);
+					mySys.train[j].setV(0);
+					linker(true);
+				}
+				
+
+				while(mySys.getCouleurs(3)== 0 || mySys.getCouleurs(3)==2 || mySys.getCouleurs(3)==7){
+					mySys.train[k].setV(-1);
+					mySys.train[j].setV(0);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				mySys.setCons_Moteurs(true,1);
+				mySys.setCons_Moteurs(false,0);
+				linker(true);
+
+				while(mySys.getCouleurs(2)!= 0 && mySys.getCouleurs(2)!=2 && mySys.getCouleurs(2)!=7){
+					mySys.train[j].setV(0);
+					mySys.train[k].setV(1);mySys.train[j].setDir(true);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				linker(true);
+				
+				while(mySys.getCouleurs(3)!= 0 && mySys.getCouleurs(3)!=2 && mySys.getCouleurs(3)!=7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+
+				mySys.setCons_Moteurs(false,1);
+				mySys.train[k].setV(vk);
+				linker(true);
+				
+				
+				
+				
+				
+			}
+			if (i==3){
+				
+				int vk=mySys.train[k].getV();
+				mySys.setCons_Moteurs(true,0);
+				linker(true);
+				
+				while(mySys.getCouleurs(2)!= 0 && mySys.getCouleurs(2)!=2 && mySys.getCouleurs(2)!=7){
+					mySys.train[j].setV(0);
+					mySys.train[k].setV(-1);
+				}
+				
+				mySys.train[k].setV(0);
+				mySys.setCons_Moteurs(false,0);
+				linker(true);
+				
+				while(mySys.getCouleurs(3)!= 0 && mySys.getCouleurs(3)!=2 && mySys.getCouleurs(3)!=7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				mySys.train[k].setV(vk);
+				linker(true);
+				
+			}
+			if (i==4){
+				
+
+				int vk=mySys.train[k].getV();
+				mySys.train[k].setV(0);
+				linker(true);
+				
+				while(mySys.getCouleurs(4)!= 0 && mySys.getCouleurs(4)!=2 && mySys.getCouleurs(4)!=7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(false);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				
+
+				while(mySys.getCouleurs(4)== 0 || mySys.getCouleurs(4)==2 || mySys.getCouleurs(4)==7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(false);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				linker(true);
+				////
+				while(mySys.getCouleurs(7)!= 0 && mySys.getCouleurs(7)!=2 && mySys.getCouleurs(7)!=7){
+					mySys.train[k].setV(-1);
+					mySys.train[j].setV(0);
+					linker(true);
+				}
+				
+
+				while(mySys.getCouleurs(7)== 0 || mySys.getCouleurs(7)==2 || mySys.getCouleurs(7)==7){
+					mySys.train[k].setV(-1);
+					mySys.train[j].setV(0);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				mySys.setCons_Moteurs(true,4);
+				mySys.setCons_Moteurs(false,3);
+				linker(true);
+
+				while(mySys.getCouleurs(6)!= 0 && mySys.getCouleurs(6)!=2 && mySys.getCouleurs(6)!=7){
+					mySys.train[j].setV(0);
+					mySys.train[k].setV(1);mySys.train[j].setDir(true);
+					linker(true);
+				}
+				
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				linker(true);
+				
+				while(mySys.getCouleurs(6)!= 0 && mySys.getCouleurs(6)!=2 && mySys.getCouleurs(6)!=7){
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					mySys.train[k].setV(0);
+					linker(true);
+				}
+
+				mySys.setCons_Moteurs(false,4);
+				
+				mySys.train[k].setV(vk);
+				linker(true);
+				
+				
+				
+			}
+			if (i==5){
+
+				mySys.train[j].setV(0);
+				mySys.train[k].setV(0);
+				mySys.setCons_Moteurs(true,3);
+				linker(true);
+				while(mySys.getCouleurs(6)!= 0 && mySys.getCouleurs(6)!=2 && mySys.getCouleurs(6)!=7){
+
+					mySys.train[j].setV(2);
+					mySys.train[k].setV(-1);
+					linker(true);
+				}
+
+				mySys.setCons_Moteurs(false,3);
+				mySys.train[k].setV(0);
+				linker(true);
+
+				while(mySys.getCouleurs(7)!= 0 && mySys.getCouleurs(7)!=2 && mySys.getCouleurs(7)!=7){
+
+					mySys.train[k].setV(0);
+					mySys.train[j].setV(1);mySys.train[j].setDir(true);
+					linker(true);
+				}
+
+				int vk=mySys.train[k].getV();
+				mySys.train[k].setV(vk);
+				linker(true);
+				
+				
+				
+			}
+		}
+	}
 }
